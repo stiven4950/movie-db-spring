@@ -26,16 +26,18 @@ public class MovieService {
     private final MovieRepository movieRepository;
     private final MovieMapper mapper;
     private final CloudinaryConfiguration cloudinaryConfiguration;
+    private final MapperUtil mapperUtil;
 
     @Autowired
-    public MovieService(MovieRepository movieRepository, MovieMapper mapper, CloudinaryConfiguration cloudinaryConfiguration) {
+    public MovieService(MovieRepository movieRepository, MovieMapper mapper, CloudinaryConfiguration cloudinaryConfiguration, MapperUtil mapperUtil) {
         this.movieRepository = movieRepository;
         this.mapper = mapper;
         this.cloudinaryConfiguration = cloudinaryConfiguration;
+        this.mapperUtil = mapperUtil;
     }
 
     public Movie save(Movie movie) throws IOException {
-        MovieEntity movieEntity = this.mapper.toMovieEntity(movie);
+        MovieEntity movieEntity = this.mapper.toEntity(movie);
 
         Map uploadResult = this.cloudinaryConfiguration.cloudinary().uploader().upload(
                 "data:image/png;base64,"+movie.getPoster(),
@@ -51,7 +53,7 @@ public class MovieService {
         movieEntity.getActors().forEach(actor-> actor.setMovie(movieEntity));
         movieEntity.setState(Constants.ACTIVE_STATE);
 
-        return this.mapper.toMovie(this.movieRepository.save(movieEntity));
+        return this.mapper.toDomain(this.movieRepository.save(movieEntity));
     }
 
     @Transactional
@@ -72,18 +74,18 @@ public class MovieService {
         this.movieRepository.updatePoster(urlImage, data.getId());
         movieEntity.setPoster(urlImage);
 
-        return this.mapper.toMovie(movieEntity);
+        return this.mapper.toDomain(movieEntity);
     }
 
     public Page<Movie> getAll(int page, int elements, String sortBy, String sortDirection){
         Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
         Pageable pageRequest = PageRequest.of(page, elements, sort);
-        return MapperUtil.toMoviesPage(this.movieRepository.findByStateTrue(pageRequest));
+        return this.mapperUtil.toMoviesPage(this.movieRepository.findByStateTrue(pageRequest));
     }
 
     public Optional<Movie> getbyId(long id){
         return this.movieRepository.findByIdMovieAndStateTrue(id).
-                map(mapper::toMovie);
+                map(mapper::toDomain);
     }
 
     @Transactional

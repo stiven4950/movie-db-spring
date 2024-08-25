@@ -25,16 +25,18 @@ public class DirectorService {
     private final DirectorRepository directorRepository;
     private final DirectorMapper mapper;
     private final CloudinaryConfiguration cloudinaryConfiguration;
+    private final MapperUtil mapperUtil;
 
     @Autowired
-    public DirectorService(DirectorRepository directorRepository, DirectorMapper mapper, CloudinaryConfiguration cloudinaryConfiguration) {
+    public DirectorService(DirectorRepository directorRepository, DirectorMapper mapper, CloudinaryConfiguration cloudinaryConfiguration, MapperUtil mapperUtil) {
         this.directorRepository = directorRepository;
         this.mapper = mapper;
         this.cloudinaryConfiguration = cloudinaryConfiguration;
+        this.mapperUtil = mapperUtil;
     }
 
     public Director save(Director director) throws IOException {
-        DirectorEntity directorEntity = this.mapper.toDirectorEntity(director);
+        DirectorEntity directorEntity = this.mapper.toEntity(director);
 
         Map uploadResult = cloudinaryConfiguration.cloudinary().uploader().upload(
                 "data:image/png;base64,"+director.getAvatar(),
@@ -47,18 +49,18 @@ public class DirectorService {
 
         directorEntity.setAvatar((String) uploadResult.get("secure_url"));
         directorEntity.setState(Constants.ACTIVE_STATE);
-        return this.mapper.toDirector(this.directorRepository.save(directorEntity));
+        return this.mapper.toDomain(this.directorRepository.save(directorEntity));
     }
 
     public Page<Director> getAll(int page, int elements, String sortBy, String sortDirection){
         Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
         Pageable pageRequest = PageRequest.of(page, elements, sort);
-        return MapperUtil.toDirectorsPage(this.directorRepository.findByStateTrue(pageRequest));
+        return this.mapperUtil.toDirectorsPage(this.directorRepository.findByStateTrue(pageRequest));
     }
 
     public Optional<Director> getById(long id){
         return this.directorRepository.findByIdDirectorAndStateTrue(id)
-                .map(this.mapper::toDirector);
+                .map(this.mapper::toDomain);
     }
 
     @Transactional

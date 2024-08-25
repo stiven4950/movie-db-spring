@@ -12,6 +12,6 @@ public class CloudinaryConfiguration {
 
     @Bean
     public Cloudinary cloudinary(){
-        return new Cloudinary(cloudinaryUrl);
+        return new Cloudinary(this.cloudinaryUrl);
     }
 }

@@ -1,27 +1,28 @@
 package com.movie.moviedb.persistence.mapper;
 
 import com.movie.moviedb.domain.Genre;
+import com.movie.moviedb.domain.Genre;
 import com.movie.moviedb.persistence.entity.GenreEntity;
-import org.mapstruct.InheritInverseConfiguration;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
-@Mapper(componentModel = "spring")
 @Component
-public interface GenreMapper {
-    @Mappings({
-            @Mapping(source = "idGenre", target = "id"),
-    })
-    Genre toGenre(GenreEntity genre);
-    List<Genre> toGenres(List<GenreEntity> genres);
+public class GenreMapper {
+    public GenreEntity toEntity(Genre genre) {
+        GenreEntity genreEntity = new GenreEntity();
 
-    @InheritInverseConfiguration
-    @Mappings({
-            @Mapping(target = "movies", ignore = true),
-    })
-    GenreEntity toGenreEntity(Genre genre);
+        genreEntity.setIdGenre(genre.getId());
+        genreEntity.setName(genre.getName());
+
+        return genreEntity;
+    }
+
+    public Genre toDomain(GenreEntity genreEntity){
+        Genre genre = new Genre();
+
+        genre.setId(genreEntity.getIdGenre());
+        genre.setName(genreEntity.getName());
+        genre.setState(genreEntity.getState());
+
+        return genre;
+    }
 }

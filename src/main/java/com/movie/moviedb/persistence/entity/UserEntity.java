@@ -18,13 +18,13 @@ public class UserEntity {
     @Column(name = "id_user", nullable = false)
     private Long idUser;
 
-    @Column(nullable = false, length = 255)
+    @Column(length = 255)
     private String name;
 
     @Column(nullable = false, unique = true, length = 20)
     private String username;
 
-    @Column(nullable = false, unique = true, length = 100)
+    @Column(unique = true, length = 100)
     private String email;
 
     @Column(nullable = false, length = 200)

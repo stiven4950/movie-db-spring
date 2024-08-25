@@ -2,24 +2,30 @@ package com.movie.moviedb.persistence.mapper;
 
 import com.movie.moviedb.domain.Actor;
 import com.movie.moviedb.persistence.entity.ActorEntity;
-import org.mapstruct.InheritInverseConfiguration;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
+import org.springframework.stereotype.Component;
 
-import java.util.List;
+@Component
+public class ActorMapper {
+    public ActorEntity toEntity(Actor actor) {
+        ActorEntity actorEntity = new ActorEntity();
 
-@Mapper(componentModel = "spring")
-public interface ActorMapper {
-    @Mappings({
-            @Mapping(source = "idActor", target = "id"),
-    })
-    Actor toActor(ActorEntity actor);
-    List<Actor> toActors(List<ActorEntity> actors);
+        actorEntity.setIdActor(actor.getId());
+        actorEntity.setName(actor.getName());
+        actorEntity.setAvatar(actor.getAvatar());
+        actorEntity.setBirthdate(actor.getBirthdate());
 
-    @InheritInverseConfiguration
-    @Mappings({
-            @Mapping(target = "actorRoles", ignore = true)
-    })
-    ActorEntity toActorEntity(Actor actor);
+        return actorEntity;
+    }
+
+    public Actor toDomain(ActorEntity actorEntity){
+        Actor actor = new Actor();
+
+        actor.setId(actorEntity.getIdActor());
+        actor.setName(actorEntity.getName());
+        actor.setAvatar(actorEntity.getAvatar());
+        actor.setBirthdate(actorEntity.getBirthdate());
+        actor.setState(actorEntity.getState());
+
+        return actor;
+    }
 }

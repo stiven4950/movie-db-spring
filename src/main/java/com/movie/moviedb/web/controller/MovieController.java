@@ -61,7 +61,6 @@ public class MovieController {
             @RequestParam(defaultValue = "10") int elements,
             @RequestParam(defaultValue = "title") String sortBy,
             @RequestParam(defaultValue = "ASC") String sortDirection){
-        System.out.println("Hola ----------------->");
         return ResponseEntity.ok(this.movieService.getAll(page, elements, sortBy, sortDirection));
     }
 

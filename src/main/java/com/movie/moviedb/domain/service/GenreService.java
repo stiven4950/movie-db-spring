@@ -22,14 +22,14 @@ public class GenreService {
     }
 
     public List<Genre> findAll(){
-        return this.mapper.toGenres(this.genreRepository.findByStateTrue());
+        return this.genreRepository.findByStateTrue().stream().map(this.mapper::toDomain).toList();
     }
 
     public Genre save(Genre genre){
-        GenreEntity genreEntity = this.mapper.toGenreEntity(genre);
+        GenreEntity genreEntity = this.mapper.toEntity(genre);
         genreEntity.setState(Constants.ACTIVE_STATE);
 
-        return this.mapper.toGenre(this.genreRepository.save(genreEntity));
+        return this.mapper.toDomain(this.genreRepository.save(genreEntity));
     }
 
     public void delete(long id){

@@ -23,14 +23,16 @@ import java.util.Optional;
 @Service
 public class ActorService {
     private final ActorRepository actorRepository;
-    private final ActorMapper mapper;
     private final CloudinaryConfiguration cloudinaryConfiguration;
+    private final ActorMapper mapper;
+    private final MapperUtil mapperUtil;
 
     @Autowired
-    public ActorService(ActorRepository actorRepository, ActorMapper mapper, CloudinaryConfiguration cloudinaryConfiguration) {
+    public ActorService(ActorRepository actorRepository, CloudinaryConfiguration cloudinaryConfiguration, ActorMapper mapper, MapperUtil mapperUtil) {
         this.actorRepository = actorRepository;
-        this.mapper = mapper;
         this.cloudinaryConfiguration = cloudinaryConfiguration;
+        this.mapper = mapper;
+        this.mapperUtil = mapperUtil;
     }
 
     public Actor save(Actor actor) throws IOException {
@@ -62,12 +64,13 @@ public class ActorService {
     public Page<Actor> getAll(int page, int elements, String sortBy, String sortDirection){
         Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
         Pageable pageRequest = PageRequest.of(page, elements, sort);
-        return MapperUtil.toActorsPage(this.actorRepository.findByStateTrue(pageRequest));
-    }
+        return this.mapperUtil.toActorsPage(this.actorRepository.findByStateTrue(pageRequest));
+}
 
     public Optional<Actor> getById(long id){
+
         return this.actorRepository.findByIdActorAndStateTrue(id)
-                .map(this.mapper::toActor);
+                .map(this.mapper::toDomain);
     }
 
     @Transactional
